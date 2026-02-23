@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AQUA PURE | POS TERMINAL</title>
+    
+    <style>
+        :root {
+            --aqua-main: #00d4ff;
+            --aqua-glow: rgba(0, 212, 255, 0.4);
+            --deep-navy: #00121a;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; 
+            overflow: hidden; background-color: var(--deep-navy); 
+            position: fixed; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Aqua Cinematic Loader */
+        #loader {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle, #002b36 0%, #00121a 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; transition: opacity 0.8s ease-in-out;
+        }
+
+        .aqua-container {
+            position: relative; text-align: center;
+        }
+
+        .water-circle {
+            position: relative; width: 120px; height: 120px;
+            border-radius: 50%; border: 2px solid var(--aqua-main);
+            box-shadow: 0 0 20px var(--aqua-glow), inset 0 0 20px var(--aqua-glow);
+            margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute; bottom: 0; width: 200%; height: 100%;
+            background: var(--aqua-main); opacity: 0.5;
+            border-radius: 40%;
+            animation: waveFlow 3s infinite linear;
+        }
+
+        .business-name {
+            color: white; font-size: 1.8rem; font-weight: 800;
+            letter-spacing: 5px; text-transform: uppercase;
+            text-shadow: 0 0 15px var(--aqua-main);
+            margin: 0;
+        }
+
+        .sub-text {
+            color: var(--aqua-main); font-size: 0.65rem;
+            letter-spacing: 3px; margin-top: 5px; opacity: 0.8;
+        }
+
+        /* Iframe Entrance */
+        iframe {
+            position: absolute; top: 0; left: 0; 
+            width: 100%; height: 100%; border: none;
+            z-index: 1; opacity: 0; transform: translateY(20px);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        iframe.active {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* Aqua Floating Button */
+        .btn-aqua {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 50; background: rgba(0, 18, 26, 0.85);
+            color: var(--aqua-main); border: 1px solid var(--aqua-main);
+            padding: 12px 30px; cursor: pointer; border-radius: 50px;
+            font-weight: bold; backdrop-filter: blur(8px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: 0.4s; letter-spacing: 1px;
+        }
+
+        .btn-aqua:hover {
+            background: var(--aqua-main); color: #00121a;
+            box-shadow: 0 0 25px var(--aqua-main);
+        }
+
+        @keyframes waveFlow {
+            0% { transform: rotate(0deg) translateY(60px); }
+            100% { transform: rotate(360deg) translateY(60px); }
+        }
+
+        .fade-out { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="loader">
+        <div class="aqua-container">
+            <div class="water-circle">
+                <div class="wave"></div>
+                <span style="z-index: 2; font-weight: bold; color: white;">AP</span>
+            </div>
+            <h1 class="business-name">AQUA PURE</h1>
+            <div class="sub-text">PURIFIED WATER SOLUTIONS</div>
+            <div id="progress" style="width: 0%; height: 1px; background: var(--aqua-main); margin-top: 15px; transition: 1s;"></div>
+        </div>
+    </div>
+
+    <button id="toggleBtn" class="btn-aqua" onclick="toggleView()">
+        💧 OPEN ORDER FORM
+    </button>
+
+    <iframe 
+        id="secure-frame"
+        src="https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec?page=admin" 
+        allowfullscreen
+        onload="revealFrame()">
+    </iframe>
+
+    <script>
+        const frame = document.getElementById('secure-frame');
+        const loader = document.getElementById('loader');
+        const btn = document.getElementById('toggleBtn');
+        const prog = document.getElementById('progress');
+
+        const ADMIN_URL = "https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec?page=admin";
+        const ORDER_URL = "https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec";
+
+        function revealFrame() {
+            prog.style.width = "100%";
+            setTimeout(() => {
+                loader.classList.add('fade-out');
+                frame.classList.add('active');
+            }, 800);
+        }
+
+        function toggleView() {
+            loader.classList.remove('fade-out');
+            frame.classList.remove('active');
+            prog.style.width = "0%";
+            
+            setTimeout(() => {
+                if (frame.src.includes('page=admin')) {
+                    frame.src = ORDER_URL;
+                    btn.innerHTML = "📊 OPEN ADMIN DASHBOARD";
+                } else {
+                    frame.src = ADMIN_URL;
+                    btn.innerHTML = "💧 OPEN ORDER FORM";
+                }
+            }, 500);
+        }
+
+        // Security
+        document.onkeydown = (e) => {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || (e.ctrlKey && [85, 83].includes(e.keyCode))) {
+                return false;
+            }
+        };
+
+        // Idle Timeout (30 Mins)
+        let idleTime = 0;
+        const resetTimer = () => idleTime = 0;
+        window.onmousemove = resetTimer;
+        window.onkeypress = resetTimer;
+        
+        setInterval(() => {
+            idleTime++;
+            if (idleTime >= 30) window.location.reload(); 
+        }, 60000);
+    </script>
+</body>
+</html>
