@@ -3,154 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AQUA PURE | POS TERMINAL</title>
+    <title>AQUA PURE | TERMINAL</title>
     
     <style>
         :root {
             --aqua-main: #00d4ff;
             --aqua-glow: rgba(0, 212, 255, 0.4);
-            --deep-navy: #00121a;
+            --deep-navy: #000c14;
         }
 
         body, html { 
             margin: 0; padding: 0; height: 100%; width: 100%; 
             overflow: hidden; background-color: var(--deep-navy); 
-            position: fixed; font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         /* Background Admin Frame */
         #admin-frame {
             position: absolute; top: 0; left: 0; 
             width: 100%; height: 100%; border: none;
-            z-index: 1;
+            z-index: 1; transition: filter 0.5s ease;
         }
 
-        /* Floating Overlay for Order Form */
+        /* Centered Popup Overlay */
         #order-overlay {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0, 18, 26, 0.9);
             z-index: 200;
             display: none; /* Hidden by default */
-            flex-direction: column;
-            backdrop-filter: blur(10px);
+            align-items: center; justify-content: center;
+            background: rgba(0, 0, 0, 0.6); /* Darkens background */
+            backdrop-filter: blur(4px);
             animation: fadeIn 0.3s ease;
         }
 
-        #order-frame {
-            width: 95%; height: 85%;
-            margin: auto; border: 1px solid var(--aqua-main);
-            border-radius: 15px; box-shadow: 0 0 30px var(--aqua-glow);
-            background: white;
+        /* The Small Window */
+        .popup-window {
+            width: 90%; max-width: 500px; /* Centered small size */
+            height: 80%; max-height: 700px;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 20px var(--aqua-glow);
+            border: 1px solid var(--aqua-main);
+            position: relative;
+            animation: scaleUp 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.28);
         }
 
-        /* Floating Toggle Button */
+        #order-frame {
+            flex-grow: 1; width: 100%; border: none;
+        }
+
+        /* Popup Header */
+        .popup-header {
+            background: var(--deep-navy); color: white;
+            padding: 12px 20px; display: flex;
+            justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--aqua-main);
+        }
+
+        /* Floating Trigger Button */
         .btn-aqua {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 300; background: rgba(0, 18, 26, 0.9);
+            z-index: 300; background: var(--deep-navy);
             color: var(--aqua-main); border: 2px solid var(--aqua-main);
             padding: 15px 35px; cursor: pointer; border-radius: 50px;
-            font-weight: bold; backdrop-filter: blur(8px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.8);
             transition: 0.3s; letter-spacing: 1px;
-            text-transform: uppercase;
         }
 
         .btn-aqua:hover {
-            background: var(--aqua-main); color: #00121a;
-            box-shadow: 0 0 30px var(--aqua-main);
+            background: var(--aqua-main); color: #000;
+            transform: translateX(-50%) translateY(-3px);
         }
 
-        /* Close Button inside Overlay */
-        .close-overlay {
-            align-self: flex-end; margin: 15px 2.5% 5px 0;
-            background: none; border: 1px solid #ff4d4d; color: #ff4d4d;
-            padding: 8px 20px; border-radius: 5px; cursor: pointer;
-        }
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Initial Loader */
         #loader {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: var(--deep-navy); display: flex; align-items: center;
-            justify-content: center; z-index: 500; transition: opacity 0.8s;
+            justify-content: center; z-index: 500; transition: opacity 0.5s;
         }
-
-        .aqua-container { text-align: center; }
-        .water-circle {
-            width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--aqua-main);
-            margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
-        }
-        .wave {
-            position: absolute; bottom: 0; width: 200%; height: 100%;
-            background: var(--aqua-main); opacity: 0.5; border-radius: 40%;
-            animation: waveFlow 3s infinite linear;
-        }
-
-        @keyframes waveFlow {
-            0% { transform: rotate(0deg) translateY(50px); }
-            100% { transform: rotate(360deg) translateY(50px); }
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .fade-out { opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div id="loader">
-        <div class="aqua-container">
-            <div class="water-circle"><div class="wave"></div></div>
-            <h1 style="color: white; letter-spacing: 5px; font-size: 1.5rem;">AQUA PURE</h1>
-            <p style="color: var(--aqua-main); font-size: 0.7rem;">LOADING TERMINAL...</p>
+        <h1 style="color: white; letter-spacing: 5px;">AQUA PURE</h1>
+    </div>
+
+    <iframe id="admin-frame" src="https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec?page=admin" onload="document.getElementById('loader').style.display='none'"></iframe>
+
+    <div id="order-overlay" onclick="closeFromOutside(event)">
+        <div class="popup-window" id="popup">
+            <div class="popup-header">
+                <span style="font-size: 0.8rem; letter-spacing: 2px;">💧 AQUA PURE ORDER FORM</span>
+                <button onclick="toggleOverlay()" style="background:none; border:none; color: #ff4d4d; cursor:pointer; font-weight:bold; font-size: 1.2rem;">✕</button>
+            </div>
+            <iframe id="order-frame" src="https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec"></iframe>
         </div>
     </div>
 
-    <iframe id="admin-frame" src="https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec?page=admin" onload="hideLoader()"></iframe>
-
-    <div id="order-overlay">
-        <button class="close-overlay" onclick="toggleOverlay()">✕ CLOSE FORM</button>
-        <iframe id="order-frame" src="https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec"></iframe>
-    </div>
-
     <button id="toggleBtn" class="btn-aqua" onclick="toggleOverlay()">
-        💧 CREATE NEW ORDER
+        CREATE NEW ORDER
     </button>
 
     <script>
-        const loader = document.getElementById('loader');
         const overlay = document.getElementById('order-overlay');
-        const btn = document.getElementById('toggleBtn');
-
-        function hideLoader() {
-            setTimeout(() => { loader.classList.add('fade-out'); }, 1000);
-        }
+        const adminFrame = document.getElementById('admin-frame');
 
         function toggleOverlay() {
             if (overlay.style.display === "flex") {
                 overlay.style.display = "none";
-                btn.innerHTML = "💧 CREATE NEW ORDER";
-                btn.style.borderColor = "var(--aqua-main)";
+                adminFrame.style.filter = "none"; // Remove blur
             } else {
                 overlay.style.display = "flex";
-                btn.innerHTML = "📊 RETURN TO DASHBOARD";
-                btn.style.borderColor = "#fff";
+                adminFrame.style.filter = "blur(8px) brightness(0.5)"; // Apply blur to background
             }
         }
 
-        // Security Protocols
-        document.onkeydown = (e) => {
-            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || (e.ctrlKey && [85, 83].includes(e.keyCode))) {
-                return false;
-            }
-        };
+        // Close if clicking the dark area outside the white box
+        function closeFromOutside(e) {
+            if (e.target.id === "order-overlay") toggleOverlay();
+        }
 
-        // Auto-Refresh Security (30 Mins)
-        let idleTime = 0;
-        document.onmousemove = () => idleTime = 0;
-        setInterval(() => {
-            idleTime++;
-            if (idleTime >= 30) window.location.reload(); 
-        }, 60000);
+        // Security
+        document.onkeydown = (e) => {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode))) return false;
+        };
     </script>
 </body>
 </html>
